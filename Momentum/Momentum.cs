@@ -66,11 +66,12 @@ namespace Momentum
 			cmd.ExecuteNonQuery();
 		}
 
-		public void DeleteData(string key, string value)
+		public void DeleteData(string table, string row, string value)
 		{
-			SqlConnection sql = new SqlConnection("Data Source=ealdb1.eal.local;Initial Catalog=EJL34_DB;User ID=ejl34_usr;Password=Baz1nga34");
-			SqlCommand cmd = new SqlCommand("DELETE FROM AarskortMomentum WHERE " + key+ "='"+value+"'", sql);
-			cmd.ExecuteNonQuery();
+			SQLSimplifier sql = new SQLSimplifier();
+			sql.Connect("ealdb1.eal.local", "EJL34_DB", "ejl34_usr", "Baz1nga34");
+			//sql.Delete(table, row, value);
 		}
+		
 	}
 }

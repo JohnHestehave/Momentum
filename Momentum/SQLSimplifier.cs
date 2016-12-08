@@ -39,6 +39,11 @@ namespace Momentum
 			}
 		}
 
+		public void Dispose()
+		{
+			sql.Dispose();
+ 		}
+
 		public int Insert(string table, Dictionary<string, string> data)
 		{
 			string query = "INSERT INTO "+table+" ";
@@ -71,7 +76,7 @@ namespace Momentum
 		}
 
 		public void Select(string table, string data, string conditions = null)
-		{
+		{ // Ikke færdig
 			string query = "SELECT "+data+ " FROM "+table;
 			if (conditions != null)
 			{
@@ -92,6 +97,54 @@ namespace Momentum
 					{
 						Console.WriteLine(e.ToString());
 					}
+				}
+			}
+			sql.Close();
+		}
+
+		public int Update(string table, Dictionary<string, string> data, int id)
+		{
+
+			string query = "UPDATE "+ table + " SET ";
+			foreach (KeyValuePair<string, string> row in data)
+			{
+				query += row.Key+"=@"+row.Key+ ",";
+			}
+			query = query.TrimEnd(',');
+			query += " WHERE ID=@ID";
+			SqlCommand cmd = new SqlCommand(query, sql);
+			foreach (KeyValuePair<string, string> row in data)
+			{
+				cmd.Parameters.AddWithValue(row.Key, row.Value);
+			}
+			cmd.Parameters.AddWithValue("ID",id);
+			sql.Open();
+			int i = cmd.ExecuteNonQuery();
+			sql.Close();
+			return i;
+		}
+
+		public int Delete(string table, string row, string value)
+		{
+			SqlCommand cmd = new SqlCommand("DELETE FROM "+table+ " WHERE "+row+ "="+value, sql);
+			cmd.Parameters.AddWithValue("value", value);
+			sql.Open();
+			int i = cmd.ExecuteNonQuery();
+			sql.Close();
+			return i;
+		}
+
+		public void Search()
+		{
+			string query = "SELECT Fornavn, Tlf FROM AarskortMomentum WHERE Fornavn LIKE '%mat%'";
+			SqlCommand cmd = new SqlCommand(query, sql);
+			sql.Open();
+			SqlDataReader reader = cmd.ExecuteReader();
+			if (reader.HasRows)
+			{
+				while (reader.Read())
+				{
+					Console.WriteLine("Fornavn: " + reader["Fornavn"] + "; Tlf: " + reader["Tlf"]);
 				}
 			}
 			sql.Close();
